@@ -1,54 +1,158 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-
+<!doctype html>
+<html lang="pt-br" data-bs-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <title>Simulador de loteria</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EducaCode – Guia de Aprendizagem em Programação</title>
+  <meta name="description" content="Plataforma web simples e acessível que reúne cursos gratuitos de TI, com busca, filtros e trilhas recomendadas." />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💡</text></svg>">
+  <style>
+    :root { --brand: #0ea5e9; }
+    .brand-gradient { background: linear-gradient(135deg, var(--brand), #7c3aed); }
+    .card-course:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.1); }
+    .tag { font-size: .75rem; border: 1px solid rgba(0,0,0,.15); border-radius: 999px; padding: .15rem .5rem; }
+    .level-badge { font-size: .7rem; }
+    .offcanvas-end { width: 420px; }
+    footer a { text-decoration: none; }
+    .kbd { border: 1px solid var(--bs-border-color); border-bottom-width: 3px; padding: .1rem .35rem; border-radius: .35rem; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .85em; }
+  </style>
 </head>
-
-<body>
-    <div class="container">
-        <div class="container__conteudo">
-            <div class="container__informacoes">
-                <div class="container__texto">
-                    <h1>Simulador<span class="container__texto-azul"> de Loteria</span></h1>
-
-                    <div class="container__campo">
-                        <label class="texto__paragrafo">Quantidade de números</label>
-                        <input class="container__input" id="quantidade" type="number" min="1">
-                    </div>
-                    
-                    <div class="container__campo">
-                        <label class="texto__paragrafo">Do número</label>
-                        <input class="container__input" id="de" type="number" min="1">
-                    </div>
-                    
-                    <div class="container__campo">
-                        <label class="texto__paragrafo">Até o número</label>
-                        <input class="container__input" id="ate" type="number" min="1">
-                    </div>
-                </div>
-                
-                <div class="chute container__botoes">
-                    <button onclick="sortear()" id="btn-sortear" class="container__botao">Sortear</button>
-                    <button onclick="reiniciar()" id="btn-reiniciar" class="container__botao-desabilitado" >Reiniciar</button>
-                </div>
-
-                <div class="container__texto" id="resultado">
-                    <label class="texto__paragrafo">Números sorteados:  nenhum até agora</label>
-                </div>
-            </div>
-
-            <img src="./img/ia.png" alt="Uma pessoa com capacete de astronauta" class="container__imagem-pessoa" />
-        </div>
+<body class="bg-body-tertiary">
+  <header class="border-bottom bg-body position-sticky top-0 z-3">
+    <div class="container py-3 d-flex align-items-center gap-3">
+      <div class="p-2 rounded-3 text-white brand-gradient d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+        <span class="fw-bold">EC</span>
+      </div>
+      <div class="flex-grow-1">
+        <h1 class="h4 mb-0">EducaCode – Guia de Aprendizagem em Programação</h1>
+        <p class="text-body-secondary mb-0">Cursos gratuitos organizados por área e nível.</p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button id="toggleTheme" class="btn btn-outline-secondary btn-sm" type="button" aria-label="Alternar modo escuro"><span id="themeLabel">Modo escuro</span></button>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="offcanvas" data-bs-target="#helpPanel" aria-controls="helpPanel">Ajuda</button>
+      </div>
     </div>
+  </header>
 
-    <script src="app.js" defer></script>
+  <main class="container my-4">
+    <!-- Controles de busca e filtros -->
+    <section class="mb-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="row g-3 align-items-end">
+            <div class="col-12 col-md-6">
+              <label for="search" class="form-label">Pesquisar cursos</label>
+              <input id="search" class="form-control" type="search" placeholder="Ex.: lógica, Python, web, segurança… (atalho / ou Ctrl+K)" />
+            </div>
+            <div class="col-6 col-md-3">
+              <label for="area" class="form-label">Área</label>
+              <select id="area" class="form-select">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3">
+              <label for="nivel" class="form-label">Nível</label>
+              <select id="nivel" class="form-select">
+                <option value="">Todos</option>
+                <option>Iniciante</option>
+                <option>Intermediário</option>
+                <option>Avançado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trilha recomendada -->
+    <section class="mb-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h5 mb-0">Trilha recomendada para iniciar</h2>
+            <span class="text-body-secondary">Siga a ordem sugerida</span>
+          </div>
+          <ol id="trilha" class="list-group list-group-numbered">
+            <!-- Populado via JS -->
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lista de cursos -->
+    <section class="mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h5 mb-0">Todos os cursos</h2>
+        <span id="countInfo" class="text-body-secondary"></span>
+      </div>
+      <div id="courses" class="row g-3">
+        <!-- Cartões gerados via JS -->
+      </div>
+    </section>
+
+    <!-- Feedback -->
+    <section class="mb-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3">
+          <div>
+            <h2 class="h6 mb-1">Sugestões e Feedbacks</h2>
+            <p class="mb-0 text-body-secondary">Nos ajude a manter a lista atualizada. Envie links de cursos gratuitos e confiáveis.</p>
+          </div>
+          <a class="btn btn-outline-primary ms-md-auto" target="_blank" rel="noopener" href="https://docs.google.com/forms/d/1AYIIkqSIY4IWpMbFyUl41hbFIOh_yRIYPjkfN3r3CIo/preview">Abrir formulário</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-top py-4">
+    <div class="container small d-flex flex-column flex-md-row gap-2 align-items-start align-items-md-center justify-content-between">
+      <div>
+        <strong>Licença:</strong> <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GNU GPL v3.0</a> – Software Livre.
+        Código-fonte sugerido para publicação no <a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a>.
+      </div>
+      <div class="text-body-secondary">© EducaCode – utilidade pública, inclusão digital.</div>
+    </div>
+  </footer>
+
+  <!-- Painel de ajuda/documentação -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="helpPanel" aria-labelledby="helpLabel">
+    <div class="offcanvas-header">
+      <h5 id="helpLabel">Como usar o EducaCode</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+    </div>
+    <div class="offcanvas-body small">
+      <h6>Navegação</h6>
+      <ul>
+        <li>Use a busca para encontrar termos como <em>Python</em>, <em>web</em> ou <em>segurança</em>.</li>
+        <li>Filtre por <strong>Área</strong> e <strong>Nível</strong>.</li>
+        <li>Clique em um cartão para ir direto à página do curso na plataforma (inscrição gratuita).</li>
+      </ul>
+      <h6>Critérios de escolha dos cursos</h6>
+      <ul>
+        <li>Preferência por instituições reconhecidas: Fundação Bradesco, Coursera, edX, Senai, etc.</li>
+        <li>Conteúdo introdutório claro, com carga horária informada e certificado quando possível.</li>
+        <li>Idioma PT-BR ou legendas acessíveis.</li>
+      </ul>
+      <h6>Passo a passo (cadastro nas plataformas)</h6>
+      <ol>
+        <li>Acesse o link do curso.</li>
+        <li>Crie uma conta gratuita na plataforma do provedor.</li>
+        <li>Confirme seu e-mail e inicie o curso.</li>
+      </ol>
+      <h6>FAQ</h6>
+      <p><strong>1 O EducaCode hospeda cursos?</strong> Não. Apenas organiza links para cursos gratuitos de terceiros.</p>
+      <p><strong>2 Posso estudar pelo celular?</strong> Sim, a página é responsiva e a maioria das plataformas tem app.</p>
+      <p><strong>3 Como contribuir?</strong> Envie sugestões no formulário de feedback ou abra um pull request no repositório.</p>
+      <h6>Transparência e acesso</h6>
+      <p>Licenciamento GPL v3.0. Os dados de cursos podem ser mantidos em planilha pública (Google Sheets) para facilitar contribuições.</p>
+      <div class="alert alert-info">
+        <strong>Integração com Google Sheets (opcional):</strong>
+        Publique sua planilha como CSV e carregue-a via <span class="kbd">fetch</span>. Exemplo de cabeçalhos: <code>titulo,area,nivel,provedor,url,cargaHoraria,descricao</code>.
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
 </body>
-
 </html>
